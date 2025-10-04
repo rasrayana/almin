@@ -122,7 +122,7 @@
     border: none;
     background-color: #ff69b4;
     color: white;
-  ">Continue</button>
+  ">Продолжить</button>
 </div>
 
 <!-- Screen 1 -->
@@ -221,18 +221,14 @@
   const quizDiv = document.getElementById("quiz");
   const continueBtn = document.getElementById("continue-btn");
 
-let noBtnMoves = 0; // Счётчик перемещений
-
-noBtn.addEventListener("mouseenter", () => {
-  if (noBtnMoves < 5) {  // Пока меньше 5 перемещений
+  // 🏃 No button runs away
+  noBtn.addEventListener("mouseenter", () => {
     const x = Math.random() * (window.innerWidth - 100);
     const y = Math.random() * (window.innerHeight - 50);
     noBtn.style.position = "absolute";
     noBtn.style.left = `${x}px`;
     noBtn.style.top = `${y}px`;
-    noBtnMoves++; // Увеличиваем счётчик
-  }
-});
+  });
 
   // ✅ Screamer on Yes
   const screamer = document.getElementById("screamer");
