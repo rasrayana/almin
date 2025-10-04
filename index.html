@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Do You Like Me?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background-color: #000;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      max-width: 90%;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 30px;
+    }
+
+    button {
+      padding: 15px 25px;
+      font-size: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+      background-color: #ff69b4;
+      color: white;
+      position: relative;
+      margin: 10px;
+    }
+
+    #noBtn {
+      background-color: #ccc;
+      color: black;
+    }
+
+    #question-text {
+      font-size: 16px;
+      margin: 20px;
+      min-height: 50px;
+    }
+
+    .letter-text {
+      max-width: 800px;
+      margin: 30px auto;
+      text-align: left;
+      white-space: pre-line;
+      line-height: 1.8;
+      font-size: 10px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 2px solid #ff69b4;
+      border-radius: 12px;
+      color: #fff;
+    }
+
+    #stopimg {
+      max-width: 300px;
+      height: auto;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🎵 Background music -->
+<audio id="bg-music" loop>
+  <source src="/img/youtube-bi0hylxusjo_hjs8V8Ie.mp3" type="audio/mpeg" />
+</audio>
+
+<!-- 🔫 Killshot music -->
+<audio id="killshot-music">
+  <source src="img\Magdalena Bay - Killshot (slowed + reverb) Official Audio.mp3" type="audio/mpeg" />
+</audio>
+
+<!-- Screen 1 -->
+<div id="screen1" class="screen active">
+  <img src="./img/hello-kiyty-cute.gif" alt="cute" style="max-width: 300px;">
+  <h1 id="question-text"></h1>
+  <div class="buttons">
+    <button id="yes-btn">Nuuuh</button>
+    <button id="noBtn">Yeeees madam</button>
+  </div>
+</div>
+
+<!-- Screen Kurwa -->
+<div id="screenKurwa" class="screen">
+  <img src="./img/a0758c9c5832ea29c773aeabf17fd672.gif" alt="Scheiße" style="max-width: 300px; border-radius: 12px;">
+  <h2>Scheiße...</h2>
+  <button id="kurwa-continue">Okay okay, go on</button>
+</div>
+
+<!-- Screen 2 -->
+<div id="screen2" class="screen">
+  <img id="stopimg" src="./img/XD (1).jpg" alt="cute">
+  <h2>Answer some questions big boy</h2>
+  <div id="quiz"></div>
+  <button id="continue-btn" style="display:none;">Continue</button>
+</div>
+
+<!-- Screen 3 -->
+<div id="screen3" class="screen">
+  <div class="song-ui" style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 30px;
+    background-color: rgba(255,255,255,0.08);
+    border: 2px solid #ff69b4;
+    border-radius: 16px;
+    box-shadow: 0 0 25px rgba(255,105,180,0.3);
+    max-width: 800px;
+  ">
+    <img src="img\download - 2025-10-05T000625.460.jpg" alt="Killshot cover"
+      style="width: 180px; height: 180px; border-radius: 16px; object-fit: cover; box-shadow: 0 0 25px rgba(255,105,180,0.4);">
+    <h2 style="color:#ff69b4; margin: 0;">🎧 Killshot 💔</h2>
+    <p style="color:#bbb; margin: 0;">by Magdalena Bay (slowed + reverb)</p>
+    
+  </div>
+
+  <div id="letter-text" class="letter-text"></div>
+</div>
+
+<script>
+  // 🎵 Background music
+  const bgMusic = document.getElementById("bg-music");
+  const killshotMusic = document.getElementById("killshot-music");
+  let musicStarted = false;
+
+  function startMusic() {
+    if (!musicStarted) {
+      try {
+        bgMusic.currentTime = 0.1;
+        bgMusic.volume = 0.3;
+        bgMusic.play();
+        musicStarted = true;
+      } catch (e) {
+        console.log("Music error:", e);
+      }
+    }
+  }
+
+  document.addEventListener("click", startMusic);
+  document.addEventListener("touchstart", startMusic);
+
+  // 📝 Typewriter for question
+  const question = "Guten tag Almin. Do you still like me?";
+  const questionEl = document.getElementById("question-text");
+  let i = 0;
+
+  function typeQuestion() {
+    if (i < question.length) {
+      questionEl.textContent += question[i];
+      i++;
+      setTimeout(typeQuestion, 100);
+    }
+  }
+
+  typeQuestion();
+
+  // 📱 Screens
+  const screen1 = document.getElementById("screen1");
+  const screenKurwa = document.getElementById("screenKurwa");
+  const screen2 = document.getElementById("screen2");
+  const screen3 = document.getElementById("screen3");
+
+  const yesBtn = document.getElementById("yes-btn");
+  const noBtn = document.getElementById("noBtn");
+  const quizDiv = document.getElementById("quiz");
+  const continueBtn = document.getElementById("continue-btn");
+
+  // 🏃 No button runs away
+  noBtn.addEventListener("mouseenter", () => {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 50);
+    noBtn.style.position = "absolute";
+    noBtn.style.left = `${x}px`;
+    noBtn.style.top = `${y}px`;
+  });
+
+  // ✅ "Yes" button → go to Kurwa screen
+  yesBtn.addEventListener("click", () => {
+    screen1.classList.remove("active");
+    screenKurwa.classList.add("active");
+  });
+
+  document.getElementById("kurwa-continue").addEventListener("click", () => {
+    screenKurwa.classList.remove("active");
+    screen2.classList.add("active");
+    startQuiz();
+  });
+
+  // ❓ Quiz
+  const questions = [
+    {
+      q: "What is my name?",
+      options: ["Rayona", "Raiena", "Rayana"],
+      answer: "Raiena"
+    },
+    {
+      q: "What turns me on the most?",
+      options: ["Your biceps", "Men loneliness Epidemic", "Girls"],
+      answer: "Girls"
+    },
+    {
+      q: "Whose biceps are bigger?",
+      options: ["Yours", "Mine", "Ours together"],
+      answer: "Mine"
+    }
+  ];
+
+  let current = 0;
+
+  function startQuiz() {
+    showQuestion();
+  }
+
+  function showQuestion() {
+    quizDiv.innerHTML = "";
+    continueBtn.style.display = "none";
+
+    if (current >= questions.length) {
+      continueBtn.style.display = "block";
+      return;
+    }
+
+    const qEl = document.createElement("p");
+    qEl.textContent = questions[current].q;
+    quizDiv.appendChild(qEl);
+
+    questions[current].options.forEach((opt) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.onclick = () => {
+        if (opt === questions[current].answer) {
+          current++;
+          showQuestion();
+        } else {
+          alert("Wrong answer Almin! Try again 💔");
+        }
+      };
+      quizDiv.appendChild(btn);
+    });
+  }
+
+  // 📨 Letter content
+ const letterLines = [
+  "Just enjoy the song and the letter below.",
+  "Dear Almin,",
+  "",
+  "I hope this letter finds you well. I just wanted to say that chatting with you always makes my day a little more fun.",
+  "Even from so far away, your messages somehow manage to make me smile at random moments.",
+  "I enjoy our little conversations, the jokes, and the random thoughts we share.",
+  "",
+  "I like this little exchange we have—it’s simple, fun, and something I look forward to.",
+  "",
+  "So, for now, just know that your messages do bring a spark of joy to my day.",
+  "",
+  "Take care babygirl,",
+  "Raiena 💌"
+];
+
+
+  function showLetterText() {
+    const letterDiv = document.getElementById("letter-text");
+    let lineIndex = 0;
+    let wordIndex = 0;
+
+    function addWord() {
+      if (lineIndex < letterLines.length) {
+        const words = letterLines[lineIndex].split(" ");
+        let lineEl = letterDiv.lastElementChild;
+
+        if (!lineEl || lineEl.dataset.lineIndex != lineIndex) {
+          lineEl = document.createElement("div");
+          lineEl.dataset.lineIndex = lineIndex;
+          letterDiv.appendChild(lineEl);
+        }
+
+        lineEl.textContent += words[wordIndex] + " ";
+        wordIndex++;
+
+        if (wordIndex < words.length) {
+          setTimeout(addWord, 200);
+        } else {
+          wordIndex = 0;
+          lineIndex++;
+          setTimeout(addWord, 400);
+        }
+      }
+    }
+
+    addWord();
+  }
+
+  // 🎧 Transition to final screen
+  continueBtn.addEventListener("click", () => {
+    screen2.classList.remove("active");
+    screen3.classList.add("active");
+    showLetterText();
+
+    // Fade out background music, then play Killshot
+    const fadeOut = setInterval(() => {
+      if (bgMusic.volume > 0.05) {
+        bgMusic.volume -= 0.05;
+      } else {
+        clearInterval(fadeOut);
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+
+        try {
+          killshotMusic.currentTime = 0;
+          killshotMusic.volume = 0.5;
+          killshotMusic.play();
+        } catch (err) {
+          console.log("Killshot playback blocked:", err);
+        }
+      }
+    }, 200);
+  });
+</script>
+</body>
+</html>
