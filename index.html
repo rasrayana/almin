@@ -94,6 +94,37 @@
   <source src="img\Magdalena Bay - Killshot (slowed + reverb) Official Audio.mp3" type="audio/mpeg" />
 </audio>
 
+<!-- Screamer overlay -->
+<div id="screamer" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: black;
+    color: white;
+    font-size: 24px;
+    font-family: 'Press Start 2P', cursive;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9999;
+">
+  <p>Я же говорила, что не стоит нажимать!</p>
+  <img src="img\Credits to @flora_enigma on TikTok.jpg" alt="Screamer" style="max-width: 400px; margin-top: 20px;">
+  <audio id="screamer-audio">
+    <source src="img\harold-screamer.mp3" type="audio/mpeg">
+  </audio>
+  <button id="screamer-close" style="
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-family: 'Press Start 2P', cursive;
+    cursor: pointer;
+    border-radius: 8px;
+    border: none;
+    background-color: #ff69b4;
+    color: white;
+  ">Продолжить</button>
+</div>
+
 <!-- Screen 1 -->
 <div id="screen1" class="screen active">
   <img src="./img/hello-kiyty-cute.gif" alt="cute" style="max-width: 300px;">
@@ -137,7 +168,6 @@
       style="width: 180px; height: 180px; border-radius: 16px; object-fit: cover; box-shadow: 0 0 25px rgba(255,105,180,0.4);">
     <h2 style="color:#ff69b4; margin: 0;">🎧 Killshot 💔</h2>
     <p style="color:#bbb; margin: 0;">by Magdalena Bay (slowed + reverb)</p>
-    
   </div>
 
   <div id="letter-text" class="letter-text"></div>
@@ -200,8 +230,23 @@
     noBtn.style.top = `${y}px`;
   });
 
-  // ✅ "Yes" button → go to Kurwa screen
+  // ✅ Screamer on Yes
+  const screamer = document.getElementById("screamer");
+  const screamerAudio = document.getElementById("screamer-audio");
+  const screamerClose = document.getElementById("screamer-close");
+
   yesBtn.addEventListener("click", () => {
+    screamer.style.display = "flex";
+    try {
+      screamerAudio.currentTime = 0;
+      screamerAudio.play();
+    } catch (err) {
+      console.log("Screamer audio blocked:", err);
+    }
+  });
+
+  screamerClose.addEventListener("click", () => {
+    screamer.style.display = "none";
     screen1.classList.remove("active");
     screenKurwa.classList.add("active");
   });
@@ -214,104 +259,66 @@
 
   // ❓ Quiz
   const questions = [
-    {
-      q: "What is my name?",
-      options: ["Rayona", "Raiena", "Rayana"],
-      answer: "Raiena"
-    },
-    {
-      q: "What turns me on the most?",
-      options: ["Your biceps", "Men loneliness Epidemic", "Girls"],
-      answer: "Girls"
-    },
-    {
-      q: "Whose biceps are bigger?",
-      options: ["Yours", "Mine", "Ours together"],
-      answer: "Mine"
-    }
+    { q: "What is my name?", options: ["Rayona", "Raiena", "Rayana"], answer: "Raiena" },
+    { q: "What turns me on the most?", options: ["Your biceps", "Men loneliness Epidemic", "Girls"], answer: "Girls" },
+    { q: "Whose biceps are bigger?", options: ["Yours", "Mine", "Ours together"], answer: "Mine" }
   ];
 
   let current = 0;
-
-  function startQuiz() {
-    showQuestion();
-  }
-
+  function startQuiz() { showQuestion(); }
   function showQuestion() {
     quizDiv.innerHTML = "";
     continueBtn.style.display = "none";
-
-    if (current >= questions.length) {
-      continueBtn.style.display = "block";
-      return;
-    }
-
+    if (current >= questions.length) { continueBtn.style.display = "block"; return; }
     const qEl = document.createElement("p");
     qEl.textContent = questions[current].q;
     quizDiv.appendChild(qEl);
-
-    questions[current].options.forEach((opt) => {
+    questions[current].options.forEach(opt => {
       const btn = document.createElement("button");
       btn.textContent = opt;
       btn.onclick = () => {
-        if (opt === questions[current].answer) {
-          current++;
-          showQuestion();
-        } else {
-          alert("Wrong answer Almin! Try again 💔");
-        }
+        if (opt === questions[current].answer) { current++; showQuestion(); } 
+        else { alert("Wrong answer Almin! Try again 💔"); }
       };
       quizDiv.appendChild(btn);
     });
   }
 
   // 📨 Letter content
- const letterLines = [
-  "Just enjoy the song and the letter below.",
-  "Dear Almin,",
-  "",
-  "I hope this letter finds you well. I just wanted to say that chatting with you always makes my day a little more fun.",
-  "Even from so far away, your messages somehow manage to make me smile at random moments.",
-  "I enjoy our little conversations, the jokes, and the random thoughts we share.",
-  "",
-  "I like this little exchange we have—it’s simple, fun, and something I look forward to.",
-  "",
-  "So, for now, just know that your messages do bring a spark of joy to my day.",
-  "",
-  "Take care babygirl,",
-  "Raiena 💌"
-];
-
+  const letterLines = [
+    "Just enjoy the song and the letter below.",
+    "Dear Almin,",
+    "",
+    "I hope this letter finds you well. I just wanted to say that chatting with you always makes my day a little more fun.",
+    "Even from so far away, your messages somehow manage to make me smile at random moments.",
+    "I enjoy our little conversations, the jokes, and the random thoughts we share.",
+    "",
+    "I like this little exchange we have—it’s simple, fun, and something I look forward to.",
+    "",
+    "So, for now, just know that your messages do bring a spark of joy to my day.",
+    "",
+    "Take care babygirl,",
+    "Raiena 💌"
+  ];
 
   function showLetterText() {
     const letterDiv = document.getElementById("letter-text");
-    let lineIndex = 0;
-    let wordIndex = 0;
-
+    let lineIndex = 0, wordIndex = 0;
     function addWord() {
       if (lineIndex < letterLines.length) {
         const words = letterLines[lineIndex].split(" ");
         let lineEl = letterDiv.lastElementChild;
-
         if (!lineEl || lineEl.dataset.lineIndex != lineIndex) {
           lineEl = document.createElement("div");
           lineEl.dataset.lineIndex = lineIndex;
           letterDiv.appendChild(lineEl);
         }
-
         lineEl.textContent += words[wordIndex] + " ";
         wordIndex++;
-
-        if (wordIndex < words.length) {
-          setTimeout(addWord, 200);
-        } else {
-          wordIndex = 0;
-          lineIndex++;
-          setTimeout(addWord, 400);
-        }
+        if (wordIndex < words.length) setTimeout(addWord, 200);
+        else { wordIndex = 0; lineIndex++; setTimeout(addWord, 400); }
       }
     }
-
     addWord();
   }
 
@@ -320,23 +327,14 @@
     screen2.classList.remove("active");
     screen3.classList.add("active");
     showLetterText();
-
-    // Fade out background music, then play Killshot
     const fadeOut = setInterval(() => {
-      if (bgMusic.volume > 0.05) {
-        bgMusic.volume -= 0.05;
-      } else {
+      if (bgMusic.volume > 0.05) bgMusic.volume -= 0.05;
+      else {
         clearInterval(fadeOut);
         bgMusic.pause();
         bgMusic.currentTime = 0;
-
-        try {
-          killshotMusic.currentTime = 0;
-          killshotMusic.volume = 0.5;
-          killshotMusic.play();
-        } catch (err) {
-          console.log("Killshot playback blocked:", err);
-        }
+        try { killshotMusic.currentTime = 0; killshotMusic.volume = 0.5; killshotMusic.play(); }
+        catch (err) { console.log("Killshot playback blocked:", err); }
       }
     }, 200);
   });
